@@ -22,7 +22,7 @@ on:
         default: ''
 
 env:
-  TOKEN_MGZ0227: ${{ secrets.TOKEN_MGZ0227 }}
+  GITHUB_TOKEN: ${{ secrets. GITHUB_TOKEN }}
   TZ: Asia/Shanghai
 
 jobs:
@@ -38,7 +38,7 @@ jobs:
       if: contains(github.event.inputs.param, 'cw')
       with:
         workflow_id: all
-        access_token: ${{ secrets.TOKEN_MGZ0227 }}
+        access_token: ${{ secrets. GITHUB_TOKEN }}
 
     - name: Load Settings.ini
       run: |
@@ -51,13 +51,13 @@ jobs:
 
     - name: Trigger Packages Update
       run: |
-        gitdate=$(curl -H "Authorization: token ${{ secrets.TOKEN_MGZ0227 }}" -s "https://api.github.com/repos/mgz0227/OP-Packages/actions/runs" | jq -r '.workflow_runs[0].created_at')
+        gitdate=$(curl -H "Authorization: token ${{ secrets. GITHUB_TOKEN }}" -s "https://api.github.com/repos/mgz0227/OP-Packages/actions/runs" | jq -r '.workflow_runs[0].created_at')
         gitdate=$(date -d "$gitdate" +%s)
         now=$(date -d "$(date)" +%s)
         if [[ $(expr $gitdate + 120) < $now ]]; then
         curl -X POST https://api.github.com/repos/mgz0227/OP-Packages/dispatches \
         -H "Accept: application/vnd.github.everest-preview+json" \
-        -H "Authorization: token ${{ secrets.TOKEN_MGZ0227 }}" \
+        -H "Authorization: token ${{ secrets. GITHUB_TOKEN }}" \
         --data '{"event_type": "update"}'
         fi
 
@@ -67,11 +67,11 @@ jobs:
           curl \
           -X POST https://api.github.com/repos/${{ github.repository }}/dispatches \
           -H "Accept: application/vnd.github.everest-preview+json" \
-          -H "Authorization: token ${{ secrets.TOKEN_MGZ0227 }}" \
+          -H "Authorization: token ${{ secrets. GITHUB_TOKEN }}" \
           -d '{"event_type": "x86_64 ${{ github.event.inputs.param }}", "client_payload": {"target": "x86_64"}}'
         #  curl \
         #  -X POST https://api.github.com/repos/${{ github.repository }}/dispatches \
         #  -H "Accept: application/vnd.github.everest-preview+json" \
-        #  -H "Authorization: token ${{ secrets.TOKEN_MGZ0227 }}" \
+        #  -H "Authorization: token ${{ secrets. GITHUB_TOKEN }}" \
         #  -d '{"event_type": "x86_generic ${{ github.event.inputs.param }}", "client_payload": {"target": "x86_generic"}}'
           
